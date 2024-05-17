@@ -1,0 +1,1 @@
+scripts are named according to the headings in obitools4 tutorial
