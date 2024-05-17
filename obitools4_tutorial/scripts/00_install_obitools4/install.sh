@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# this is the cloned github repository location
-OBIDIR=/scratch/gpfs/bjarnold/obitools4
+# load the environment variables
+source ../env_vars.sh
 
-# this is the location I'm specifying for install since default is /usr/local
-INSTALLDIR=/home/bjarnold/programs/obitools4
-
-# the shell script we will run came directly from the github repo parent directory
-bash ${OBIDIR}/install_obitools.sh --install-dir ${INSTALLDIR}
-
+# the shell script we will run to install obitools4 came directly from the github repository parent directory
+bash ${OBI_GIT_DIR}/install_obitools.sh --install-dir ${OBI_INSTALL_DIR}
