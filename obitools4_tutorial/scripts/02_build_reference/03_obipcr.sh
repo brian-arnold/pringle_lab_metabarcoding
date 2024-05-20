@@ -4,30 +4,35 @@
 #SBATCH -e err
 #SBATCH --nodes=1                # node count
 #SBATCH --ntasks=1               # total number of tasks across all nodes
-#SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
-#SBATCH --mem-per-cpu=60G         # memory per cpu-core (4G is default)
-#SBATCH --time 3-00:00:00        # DAYS-HOURS:MINUTES:SECONDS
+#SBATCH --cpus-per-task=4        # cpu-cores per task (>1 if multi-threaded tasks)
+#SBATCH --mem-per-cpu=40G         # memory per cpu-core (4G is default)
+#SBATCH --time 1-00:00:00        # DAYS-HOURS:MINUTES:SECONDS
+
+
+# from the docs:
+# build the reference database is to use the obipcr program to simulate a PCR 
+# and extract all sequences from a general purpose DNA database such as genbank 
+# or EMBL that can be amplified in silico by the two primers used for PCR 
+# amplification.
+
+# NOTE: with ~20G memory per cpu this job was killed by the cluster
 
 source ../env_vars.sh
 
-OBITOOLS4_DIR=/home/bjarnold/programs/obitools4/bin
+# NOTES: 
+# tutorial used -t option for obipcr but this is an error as this command doesn't accept this option
+# -e, --allowed-mismatches: Maximum number of mismatches allowed for each primer.
+# -l, --min-length: Minimum length of the barcode (primers excluded)
+# -L, --max-length: Maximum length of the barcode (primers excluded)
 
-BASE_DIR=/scratch/gpfs/bjarnold/Pringle/obitools4_tutorial
-DATA_DIR=${BASE_DIR}/wolf_data
-RESULTS_DIR=${BASE_DIR}/wolf_data_results
-
-GENBANK_DIR=/scratch/gpfs/bjarnold/Pringle/obitools4_tutorial/genbank/Release-258
-TAXO_DIR=/scratch/gpfs/bjarnold/Pringle/obitools4_tutorial/taxonomy
-
-# NOTE: tutorial used -t option for obipcr but this is an error as this command doesn't accept this option
-
-${OBITOOLS4_DIR}/obipcr \
+${OBI_INSTALL_DIR}/bin/obipcr \
+--max-cpu 4 \
 -e 3 \
 -l 50 \
 -L 150 \
 --genbank \
---forward TTAGATACCCCACTATGC \
---reverse TAGAACAGGCTCCTCTAG \
+--forward ${BUILD_REF_OBIPCR_F_PRIMER} \
+--reverse ${BUILD_REF_OBIPCR_R_PRIMER} \
 --no-order \
-${GENBANK_DIR}/gb*.seq.gz \
-> ${RESULTS_DIR}/v05.pcr.fasta
+${NCBI_GENBANK_RELEASE_DIR}/gb*.seq.gz \
+> ${BUILD_REF_OBIPCR_OUT}
